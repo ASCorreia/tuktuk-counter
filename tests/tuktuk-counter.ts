@@ -9,7 +9,10 @@ describe("tuktuk-counter", () => {
 
   const program = anchor.workspace.tuktukCounter as Program<TuktukCounter>;
 
+  const taskQueue = new anchor.web3.PublicKey("CMreFdKxT5oeZhiX8nWTGz9PtXM1AMYTh6dGR2UzdtrA");
   const counter = anchor.web3.PublicKey.findProgramAddressSync([Buffer.from("counter")], program.programId)[0];
+  const queueAuthority = anchor.web3.PublicKey.findProgramAddressSync([Buffer.from("queue_authority")], program.programId)[0];
+  const taskQueueAuthority = anchor.web3.PublicKey.findProgramAddressSync([Buffer.from("task_queue_authority"), taskQueue.toBuffer(), queueAuthority.toBuffer()],program.programId)[0];
 
   it("Create and increment counter", async () => {
     const tx = await program.methods.increment()
@@ -19,6 +22,7 @@ describe("tuktuk-counter", () => {
       systemProgram: anchor.web3.SystemProgram.programId,
     })
     .rpc();
-    console.log("Your transaction signature", tx);
+    console.log("\nYour transaction signature", tx);
+    console.log("\nQueue Authority PDA:", queueAuthority.toBase58());
   });
 });
