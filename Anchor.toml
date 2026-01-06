@@ -6,13 +6,13 @@ resolution = true
 skip-lint = false
 
 [programs.localnet]
-tuktuk_counter = "7j34iqa2ZFMS79QXPuZ3FieLoE6WQUDJ8wJqZr4X86UF"
+tuktuk_counter = "6wpZxCkv6bZwosC1WHqqhm2sDZfV3oA7fSMU78vkipaR"
 
 [registry]
 url = "https://api.apr.dev"
 
 [provider]
-cluster = "localnet"
+cluster = "devnet"
 wallet = "~/.config/solana/id.json"
 
 [scripts]

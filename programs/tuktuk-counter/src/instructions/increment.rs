@@ -4,17 +4,12 @@ use crate::state::Counter;
 
 #[derive(Accounts)]
 pub struct Increment<'info> {
-    #[account(mut)]
-    pub user: Signer<'info>,
     #[account(
-        init_if_needed,
-        payer = user,
+        mut,
         seeds = [b"counter"],
-        bump,
-        space = Counter::INIT_SPACE,
+        bump = counter.bump,
     )]
     pub counter: Account<'info, Counter>,
-    pub system_program: Program<'info, System>,
 }
 
 impl<'info> Increment<'info> {

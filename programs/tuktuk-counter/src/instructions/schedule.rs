@@ -1,3 +1,5 @@
+use std::str::FromStr;
+
 use anchor_lang::prelude::*;
 use anchor_lang::solana_program::instruction::Instruction;
 use tuktuk_program::{
@@ -21,7 +23,10 @@ use crate::state::Counter;
 
 #[derive(Accounts)]
 pub struct Schedule<'info> {
-    #[account(mut)]
+    #[account(
+        mut,
+        address = Pubkey::from_str("AHYic562KhgtAEkb1rSesqS87dFYRcfXb4WwWus3Zc9C").unwrap()
+    )]
     pub user: Signer<'info>,
     /// CHECK: This is safe because we don't read or write from this account
     #[account(
@@ -55,9 +60,7 @@ impl<'info> Schedule<'info> {
             vec![Instruction {
                 program_id: crate::ID,
                 accounts: crate::__cpi_client_accounts_increment::Increment {
-                    user: self.user.to_account_info(),
                     counter: self.counter.to_account_info(),
-                    system_program: self.system_program.to_account_info(),
                 }
                 .to_account_metas(None)
                 .to_vec(),
