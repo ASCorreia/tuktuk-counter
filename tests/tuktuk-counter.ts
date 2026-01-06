@@ -25,7 +25,7 @@ describe("tuktuk-counter", () => {
   const taskQueue = new anchor.web3.PublicKey("CMreFdKxT5oeZhiX8nWTGz9PtXM1AMYTh6dGR2UzdtrA");
   const counter = anchor.web3.PublicKey.findProgramAddressSync([Buffer.from("counter")], program.programId)[0];
   const queueAuthority = anchor.web3.PublicKey.findProgramAddressSync([Buffer.from("queue_authority")], program.programId)[0];
-  const taskQueueAuthority = anchor.web3.PublicKey.findProgramAddressSync([Buffer.from("task_queue_authority"), taskQueue.toBuffer(), queueAuthority.toBuffer()],program.programId)[0];
+  const taskQueueAuthority = taskQueueAuthorityKey(taskQueue, queueAuthority)[0];
 
   xit("Initialize counter", async () => {
     const tx = await program.methods.initialize()
