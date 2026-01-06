@@ -14,6 +14,7 @@ import {
   taskQueueAuthorityKey,
 } from "@helium/tuktuk-sdk";
 import { TuktukCounter } from "../target/types/tuktuk_counter";
+import { assert } from "chai";
 
 describe("tuktuk-counter", () => {
   // Configure the client to use the local cluster.
@@ -46,23 +47,26 @@ describe("tuktuk-counter", () => {
     .rpc();
     console.log("\nYour transaction signature", tx);
     console.log("\nQueue Authority PDA:", queueAuthority.toBase58());
+    console.log("\nCounter Value:", (await program.account.counter.fetch(counter)).count.toString());
   });
 
   it("Schedule increment task", async () => {
     let tuktukProgram = await init(provider);
 
-    const tx = await program.methods.schedule(0)
+    let taskID = 6;
+    const tx = await program.methods.schedule(taskID)
     .accountsPartial({
       user: provider.publicKey,
       counter: counter,
       taskQueue: taskQueue,
       taskQueueAuthority: taskQueueAuthority,
-      task: taskKey(taskQueue, 0)[0],
+      task: taskKey(taskQueue, taskID)[0],
       queueAuthority: queueAuthority,
       systemProgram: anchor.web3.SystemProgram.programId,
       tuktukProgram: tuktukProgram.programId,
     })
-    .rpc();
+    .rpc({skipPreflight: true});
+    assert(tuktukProgram.programId.equals(new anchor.web3.PublicKey("tuktukUrfhXT6ZT77QTU8RQtvgL967uRuVagWF57zVA")));
     console.log("\nYour transaction signature", tx);
   });
 });

@@ -1,6 +1,6 @@
 use std::str::FromStr;
 
-use anchor_lang::prelude::*;
+use anchor_lang::{prelude::*, InstructionData};
 use anchor_lang::solana_program::instruction::Instruction;
 use tuktuk_program::{
     TransactionSourceV0, 
@@ -64,7 +64,7 @@ impl<'info> Schedule<'info> {
                 }
                 .to_account_metas(None)
                 .to_vec(),
-                data: vec![],
+                data: crate::instruction::Increment {}.data(),
             }],
         vec![],
         ).unwrap();
@@ -73,7 +73,7 @@ impl<'info> Schedule<'info> {
             CpiContext::new_with_signer(
                 self.tuktuk_program.to_account_info(),
                 QueueTaskV0 {
-                    payer: self.queue_authority.to_account_info(),
+                    payer: self.user.to_account_info(),
                     queue_authority: self.queue_authority.to_account_info(),
                     task_queue: self.task_queue.to_account_info(),
                     task_queue_authority: self.task_queue_authority.to_account_info(),
@@ -85,7 +85,7 @@ impl<'info> Schedule<'info> {
             QueueTaskArgsV0 {
                 trigger: TriggerV0::Now,
                 transaction: TransactionSourceV0::CompiledV0(compiled_tx),
-                crank_reward: None,
+                crank_reward: Some(1000001),
                 free_tasks: 1,
                 id: task_id,
                 description: "test".to_string(),
