@@ -2,15 +2,7 @@ import * as anchor from "@coral-xyz/anchor";
 import { Program } from "@coral-xyz/anchor";
 import {
   init,
-  taskQueueKey,
-  taskQueueNameMappingKey,
-  tuktukConfigKey,
-  compileTransaction,
-  CompiledTransactionV0,
   taskKey,
-  runTask,
-  customSignerKey,
-  RemoteTaskTransactionV0,
   taskQueueAuthorityKey,
 } from "@helium/tuktuk-sdk";
 import { TuktukCounter } from "../target/types/tuktuk_counter";

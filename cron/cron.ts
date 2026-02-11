@@ -1,13 +1,21 @@
 
 import * as anchor from "@coral-xyz/anchor";
 import { Program } from "@coral-xyz/anchor";
-import { createCronJob, cronJobTransactionKey, getCronJobForName, init as initCron } from "@helium/cron-sdk";
+import { createCronJob, 
+    cronJobTransactionKey, 
+    getCronJobForName, 
+    init as initCron 
+} from "@helium/cron-sdk";
 import {
   compileTransaction,
   init,
   taskQueueAuthorityKey
 } from "@helium/tuktuk-sdk";
-import { LAMPORTS_PER_SOL, PublicKey, SystemProgram, TransactionInstruction } from "@solana/web3.js";
+import { 
+    LAMPORTS_PER_SOL, 
+    SystemProgram, 
+    TransactionInstruction 
+} from "@solana/web3.js";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import { sendInstructions } from "@helium/spl-utils";
@@ -23,22 +31,22 @@ async function main() {
         .options({
         cronName: {
             type: "string",
-            description: "tuktuk-counter-cron",
+            description: "The name of the cron job to create",
             demandOption: true,
         },
         queueName: {
             type: "string",
-            description: "tuktuk-counter",
+            description: "The name of the task queue to use",
             demandOption: true,
         },
         walletPath: {
             type: "string",
-            description: "/Users/andrecorreia/.config/solana/id.json",
+            description: "Path to the wallet keypair",
             demandOption: true,
         },
         rpcUrl: {
             type: "string",
-            description: "https://api.devnet.solana.com",
+            description: "Your Solana RPC URL",
             demandOption: true,
         },
         message: {
@@ -99,8 +107,9 @@ async function main() {
             args: {
                 name: argv.cronName,
                 schedule: "0 * * * * *", // Run every minute
-                // The memo transaction doesn't need to schedule more transactions, so we set this to 0
-                freeTasksPerTransaction: 1,
+                // How many "free" tasks to allocate to this cron job per transaction (whitout paying crank fee)
+                // The increment transaction doesn't need to schedule more transactions, so we set this to 0
+                freeTasksPerTransaction: 0,
                 // We just have one transaction to queue for each cron job, so we set this to 1
                 numTasksPerQueueCall: 1,
             }
@@ -115,7 +124,7 @@ async function main() {
             lamports: argv.fundingAmount,
         }),
         ]);
-        // Create a simple memo instruction
+        // Create a simple increment instruction
         const counterInstruction = new TransactionInstruction({
             keys: [
                 { pubkey: counter, isSigner: false, isWritable: true }
@@ -131,7 +140,7 @@ async function main() {
             []
         );
 
-        // Adding memo to the cron job
+        // Adding increment to the cron job
         await cronProgram.methods
         .addCronTransactionV0({
             index: 0,
