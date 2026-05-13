@@ -1,22 +1,16 @@
 use std::str::FromStr;
 
-use anchor_lang::{prelude::*, InstructionData};
 use anchor_lang::solana_program::instruction::Instruction;
+use anchor_lang::{prelude::*, InstructionData};
 use tuktuk_program::{
-    TransactionSourceV0, 
-    compile_transaction, 
+    compile_transaction,
     tuktuk::{
-        cpi::{
-            accounts::{
-                QueueTaskV0, 
-                InitializeTaskQueueV0
-            },
-            queue_task_v0, 
-            initialize_task_queue_v0
-        }, 
-        program::Tuktuk, 
-        types::TriggerV0
-    }, types::QueueTaskArgsV0
+        cpi::{accounts::QueueTaskV0, queue_task_v0},
+        program::Tuktuk,
+        types::TriggerV0,
+    },
+    types::QueueTaskArgsV0,
+    TransactionSourceV0,
 };
 
 use crate::state::Counter;
@@ -25,7 +19,7 @@ use crate::state::Counter;
 pub struct Schedule<'info> {
     #[account(
         mut,
-        address = Pubkey::from_str("AHYic562KhgtAEkb1rSesqS87dFYRcfXb4WwWus3Zc9C").unwrap()
+        // address = Pubkey::from_str("").unwrap()
     )]
     pub user: Signer<'info>,
     /// CHECK: This is safe because we don't read or write from this account
@@ -49,7 +43,7 @@ pub struct Schedule<'info> {
         seeds = [b"queue_authority"],
         bump
     )]
-    pub queue_authority: AccountInfo<'info>,
+    pub queue_authority: UncheckedAccount<'info>,
     pub system_program: Program<'info, System>,
     pub tuktuk_program: Program<'info, Tuktuk>,
 }
@@ -64,10 +58,11 @@ impl<'info> Schedule<'info> {
                 }
                 .to_account_metas(None)
                 .to_vec(),
-                data: crate::instruction::Increment {}.data(),
+                data: crate::instruction::Increment.data(),
             }],
-        vec![],
-        ).unwrap();
+            vec![],
+        )
+        .unwrap();
 
         queue_task_v0(
             CpiContext::new_with_signer(
@@ -86,12 +81,12 @@ impl<'info> Schedule<'info> {
                 trigger: TriggerV0::Now,
                 transaction: TransactionSourceV0::CompiledV0(compiled_tx),
                 crank_reward: Some(1000001),
-                free_tasks: 1,
+                free_tasks: 0,
                 id: task_id,
                 description: "test".to_string(),
             },
         )?;
-        
-    Ok(())
+
+        Ok(())
     }
 }
